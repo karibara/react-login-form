@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
@@ -11,12 +11,30 @@ const Login = (props) => {
   const [passwordIsValid, setPasswordIsValid] = useState();
   const [formIsValid, setFormIsValid] = useState(false);
 
+  // DEBOUNCE
+  useEffect(()=>{
+
+    // we set timer and for the every key stroke we clear it
+    const timerIdentifier = setTimeout(()=>{
+      console.log("Checking form validity!");
+      setFormIsValid(
+        enteredEmail.includes('@') && enteredPassword.trim().length > 6
+        );
+      }, 500)
+
+    // return a clean up function. 
+    // The clean up fnc runs before every new side efnc execution and before the component is removed. 
+    // We clear the last timer before we set a new one.
+    return ()=> {
+      console.log("Cleanup");
+      clearTimeout(timerIdentifier)
+    }
+
+  }, [enteredEmail, enteredPassword])
+
   const emailChangeHandler = (event) => {
     setEnteredEmail(event.target.value);
 
-    setFormIsValid(
-      event.target.value.includes('@') && enteredPassword.trim().length > 6
-    );
   };
 
   const passwordChangeHandler = (event) => {
